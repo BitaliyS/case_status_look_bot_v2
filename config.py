@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-BOT_TOKEN = "8151033471:AAFTvOE76V-d-GShUa_bqx_T-VGyzzuSRTg"
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 ADMIN_CHAT_IDS = [int(x) for x in os.getenv("ADMIN_CHAT_ID", "241131840,444443993,406806178,347009930,35319745,1552303318").split(",") if x.strip()]
 
 RUCAPTCHA_API_KEY = os.getenv("RUCAPTCHA_API_KEY")

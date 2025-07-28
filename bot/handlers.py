@@ -63,10 +63,37 @@ async def list_cases_cmd(message: types.Message):
         if not cases:
             await message.reply("Нет активных кейсов для отслеживания.")
             return
-        text = "<b>Активные кейсы:</b>\n"
-        for case in cases:
-            text += f"\n<b>{case['Case_number']}</b> — {case['Client_name']}\nСтатус: {case['Status']}\n"
-        await message.reply(text, parse_mode="HTML")
+        
+        # Разбиваем на части по 10 кейсов в каждом сообщении
+        chunk_size = 10
+        for i in range(0, len(cases), chunk_size):
+            chunk = cases[i:i + chunk_size]
+            text = f"<b>Активные кейсы (часть {i//chunk_size + 1}):</b>\n"
+            for case in chunk:
+                # Заменяем длинные ошибки на короткую фразу
+                status = case['Status']
+                if "Ошибка при получении статуса" in status:
+                    status = "Статус не установлен"
+                
+                text += f"\n<b>{case['Case_number']}</b> — {case['Client_name']}\nСтатус: {status}\n"
+            
+            # Проверяем длину сообщения (лимит Telegram ~4096 символов)
+            if len(text) > 4000:
+                # Если всё ещё слишком длинное, разбиваем ещё больше
+                for j in range(0, len(chunk), 5):
+                    sub_chunk = chunk[j:j + 5]
+                    sub_text = f"<b>Активные кейсы (часть {i//chunk_size + 1}.{j//5 + 1}):</b>\n"
+                    for case in sub_chunk:
+                        # Заменяем длинные ошибки на короткую фразу
+                        status = case['Status']
+                        if "Ошибка при получении статуса" in status:
+                            status = "Статус не установлен"
+                        
+                        sub_text += f"\n<b>{case['Case_number']}</b> — {case['Client_name']}\nСтатус: {status}\n"
+                    await message.reply(sub_text, parse_mode="HTML")
+            else:
+                await message.reply(text, parse_mode="HTML")
+                
     except Exception as e:
         print("Ошибка в list_cases_cmd:", e)
         traceback.print_exc()

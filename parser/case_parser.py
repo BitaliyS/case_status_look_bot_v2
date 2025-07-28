@@ -18,7 +18,7 @@ def get_case_status(case_number):
     driver = webdriver.Chrome(options=chrome_options)
     try:
         driver.get("https://www.casestatusext.com/cases/")
-        WebDriverWait(driver, 10).until(
+        WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "input.ant-input"))
         )
         input_box = driver.find_element(By.CSS_SELECTOR, "input.ant-input")
@@ -26,7 +26,7 @@ def get_case_status(case_number):
         input_box.send_keys(case_number)
         search_btn = driver.find_element(By.CSS_SELECTOR, "button[type='button']")
         search_btn.click()
-        WebDriverWait(driver, 15).until(
+        WebDriverWait(driver, 30).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "div.ant-descriptions"))
         )
         table = driver.find_element(By.CSS_SELECTOR, "div.ant-descriptions")
