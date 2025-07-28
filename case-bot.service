@@ -1,0 +1,15 @@
+[Unit]
+Description=Case Status Look Bot
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/Case_status_look_bot
+Environment=PATH=/root/Case_status_look_bot/.venv/bin
+ExecStart=/root/Case_status_look_bot/.venv/bin/python /root/Case_status_look_bot/bot/main.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target 

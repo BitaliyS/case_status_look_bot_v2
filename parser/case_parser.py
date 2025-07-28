@@ -11,6 +11,12 @@ def get_case_status(case_number):
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--window-size=1920,1080")
+    chrome_options.add_argument("--disable-gpu")  # Отключаем GPU для облачной среды
+    chrome_options.add_argument("--disable-extensions")  # Отключаем расширения
+    chrome_options.add_argument("--disable-plugins")  # Отключаем плагины
+    chrome_options.add_argument("--disable-images")  # Отключаем загрузку изображений для ускорения
+    chrome_options.add_argument("--disable-javascript")  # Отключаем JavaScript если не нужен
+    chrome_options.add_argument("--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
     # Прокси отключён для теста
     # proxy = f"{PROXY_USER}:{PROXY_PASS}@{PROXY_HOST}:{PROXY_PORT}"
     # chrome_options.add_argument(f'--proxy-server=http://{proxy}')
