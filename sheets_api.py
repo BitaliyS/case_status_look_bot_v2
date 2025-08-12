@@ -6,21 +6,25 @@ import pytz
 # Название файла с ключом сервисного аккаунта
 SERVICE_ACCOUNT_FILE = 'case-look-b1a1e3beddf1.json'
 # ID таблицы (из URL)
-SPREADSHEET_ID = '1ibyHPWjXTca0-TmSxiISqtm2VO8bELBGxijl7YSwQ2Y'
+SPREADSHEET_ID = '1BsfR7weqOpDRLUjfdP9009tYUXmcAthcHfFFPAkMqF8'
 # Имя листа (обычно 'Лист1' или 'Sheet1')
 SHEET_NAME = 'Лист1'
 
 # Подключение к Google Sheets
-scope = [
-    'https://spreadsheets.google.com/feeds',
-    'https://www.googleapis.com/auth/drive',
-]
-creds = ServiceAccountCredentials.from_json_keyfile_name(SERVICE_ACCOUNT_FILE, scope)
-client = gspread.authorize(creds)
-sheet = client.open_by_key(SPREADSHEET_ID).worksheet(SHEET_NAME)
+def get_sheet():
+    scope = [
+        'https://spreadsheets.google.com/feeds',
+        'https://www.googleapis.com/auth/drive',
+    ]
+    creds = ServiceAccountCredentials.from_json_keyfile_name(SERVICE_ACCOUNT_FILE, scope)
+    client = gspread.authorize(creds)
+    return client.open_by_key(SPREADSHEET_ID).worksheet(SHEET_NAME)
+
+sheet = None
 
 # Проверка и добавление колонок Active и LastChecked, если их нет
 def ensure_columns():
+    sheet = get_sheet()
     headers = sheet.row_values(1)
     changed = False
     if 'Active' not in headers:
@@ -34,6 +38,7 @@ def ensure_columns():
 
 def add_case(case_number, client_name, status):
     """Добавить новый кейс в таблицу с Active=Yes и текущим временем проверки"""
+    sheet = get_sheet()
     headers = ensure_columns()
     row = [case_number, client_name, status]
     # Добавляем пустые значения для пропущенных колонок
@@ -46,12 +51,14 @@ def add_case(case_number, client_name, status):
 
 def get_all_cases():
     """Получить все кейсы из таблицы (список словарей)"""
+    sheet = get_sheet()
     ensure_columns()
     records = sheet.get_all_records()
     return records
 
 def update_case_status(case_number, new_status):
     """Обновить статус кейса по номеру"""
+    sheet = get_sheet()
     headers = ensure_columns()
     cell = sheet.find(case_number)
     if cell:
@@ -73,6 +80,7 @@ def extract_digits(case_number):
     return ''.join(filter(str.isdigit, case_number))
 
 def add_case_or_notify(case_number, client_name, status):
+    sheet = get_sheet()
     headers = ensure_columns()
     records = sheet.get_all_records()
     new_case_digits = extract_digits(case_number)
@@ -92,6 +100,7 @@ def add_case_or_notify(case_number, client_name, status):
     return True, None
 
 def get_active_cases():
+    sheet = get_sheet()
     ensure_columns()
     records = sheet.get_all_records()
     unique = {}
